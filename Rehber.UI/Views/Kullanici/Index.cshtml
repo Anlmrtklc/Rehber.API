@@ -1,0 +1,93 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+<form id="frm">
+
+    
+        <input name="ad" type="text" id="txtAd" placeholder="Ad giriniz.." /><br />
+        <input name="soyad" type="text" id="txtSoyad" placeholder="Soyad giriniz.." /><br />
+        <input name="telefon" type="text" id="txtTelefon" placeholder="Telefon giriniz.." /><br />
+
+ 
+
+</form>
+<button name="button" id="btnSendData" class="btn btn-primary">Gönder</button>
+<hr />
+
+
+
+<button id="btnVeriYukle" class="btn btn-success">Verileri Yükle</button>
+<hr />
+<div id="loading" class="alert alert-warning" style="display:none;">yükleniyor..</div>
+<ul id="sonuc" class="list-group"></ul>
+
+
+<script>
+
+    $(document).ready(function () {
+
+
+        $("#btnVeriYukle").click(function () {
+
+            $.ajax({
+                type: "GET",
+                url: "https://localhost:44344/api/Kullanici/Listele",
+                dataType: "json",
+                beforeSend: function () {
+                    $("#loading").show(300);
+                }
+            }).done(function (d) {
+                console.log(d);
+                $("#sonuc").empty();
+                for (var i = 0; i < d.length; i++) {
+                    $("#sonuc").append(`<div>${d[i].ad} ${d[i].soyAd}</div>`);
+                    $("#sonuc").append(`<div>${d[i].telefon}</div>`);
+                }
+
+            }).fail(function (e) {
+                alert("Hata oluştu..");
+            }).always(function () {
+                $("#loading").hide(300);
+            });
+
+        });
+
+
+
+
+    });
+
+    var frm = $('#frm');
+
+    $("#btnSendData").click(function () {
+
+        var veri = JSON.stringify(frm.serializeJSON());
+
+        console.log(veri);
+
+        $.ajax({
+            url: "https://localhost:44344/api/Kullanici/Ekle",
+            type: "POST",
+            data:  veri,
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+
+        }).done(function (d) {
+;
+
+        }).fail(function () {
+            alert("Hata oluştu..");
+
+        }).always(function () {
+            $("#loading").hide(300);
+        });
+
+    });
+
+
+
+</script>
